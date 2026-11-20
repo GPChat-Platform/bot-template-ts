@@ -4,6 +4,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) · versionnage
 
 ## [Non publié]
 
+## [1.0.1] — 2026-11-20
+
+### Corrigé
+- Tests compatibles Node 20 (la CI échouait sur le motif `**` de `node --test`).
+
 ## [1.0.0] — 2026-11-20
 
 ### Ajouté

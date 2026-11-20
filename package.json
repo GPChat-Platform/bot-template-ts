@@ -1,6 +1,6 @@
 {
   "name": "gpchat-bot-template-ts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Modèle de bot GPChat en TypeScript : polling ou webhook signé, commandes, boutons, FR/EN, observabilité, Docker",
   "license": "MIT",
   "private": true,
