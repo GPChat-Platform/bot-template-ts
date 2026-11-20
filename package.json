@@ -10,7 +10,7 @@
     "build": "tsc",
     "start": "node dist/src/index.js",
     "dev": "tsc && node --env-file=.env dist/src/index.js",
-    "test": "tsc && node --test \"dist/test/**/*.test.js\"",
+    "test": "tsc && node --test dist/test/bot.test.js",
     "commands": "tsc && node -e \"const {commands}=require('./dist/src/commands');console.log(JSON.stringify(Object.entries(commands).filter(([,c])=>!c.adminOnly).map(([command,c])=>({command,description:c.description.fr})),null,2))\""
   },
   "devDependencies": {
