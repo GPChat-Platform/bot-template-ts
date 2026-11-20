@@ -1,0 +1,20 @@
+{
+  "name": "gpchat-bot-template-ts",
+  "version": "1.0.0",
+  "description": "Modèle de bot GPChat en TypeScript : polling ou webhook signé, commandes, boutons, FR/EN, observabilité, Docker",
+  "license": "MIT",
+  "private": true,
+  "main": "dist/src/index.js",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/src/index.js",
+    "dev": "tsc && node --env-file=.env dist/src/index.js",
+    "test": "tsc && node --test \"dist/test/**/*.test.js\"",
+    "commands": "tsc && node -e \"const {commands}=require('./dist/src/commands');console.log(JSON.stringify(Object.entries(commands).filter(([,c])=>!c.adminOnly).map(([command,c])=>({command,description:c.description.fr})),null,2))\""
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.2"
+  }
+}

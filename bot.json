@@ -1,0 +1,8 @@
+{
+  "name": "Mon Bot TypeScript",
+  "username": "mon_bot_ts",
+  "category": "utilities",
+  "deliveryMode": "polling",
+  "description": "Bot modèle : démontre les commandes, les boutons, le Markdown et les préférences utilisateur. Remplacez ce texte (20 à 512 caractères) par la description de votre bot.",
+  "commands": "Générez-les avec : npm run commands"
+}
