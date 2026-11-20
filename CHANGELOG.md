@@ -4,6 +4,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) · versionnage
 
 ## [Non publié]
 
+## [1.1.0] — 2026-11-20
+
+### Ajouté
+- Commandes adressées en groupe (convention Telegram) : « /commande@nom_du_bot » ne concerne que ce bot. Avec `BOT_USERNAME` renseigné, le bot ignore les commandes adressées à un autre bot (la plateforme ne les lui remet déjà plus).
+
 ## [1.0.1] — 2026-11-20
 
 ### Corrigé

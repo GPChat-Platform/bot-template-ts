@@ -34,7 +34,7 @@ test('configuration : erreurs groupées et valeurs par défaut', () => {
 });
 
 test('analyse des commandes', () => {
-  assert.deepEqual(parseCommand('/echo@mon_bot bonjour  '), { name: 'echo', args: 'bonjour' });
+  assert.deepEqual(parseCommand('/echo@Mon_Bot bonjour  '), { name: 'echo', args: 'bonjour', bot: 'mon_bot' });
   assert.deepEqual(parseCommand('/PING'), { name: 'ping', args: '' });
   assert.equal(parseCommand('bonjour'), null);
 });
@@ -78,6 +78,18 @@ test('groupe : ignoré sans commande ni mention ; bouton compteur modifie le mes
   assert.deepEqual(s.sent.at(-1)!.target, { groupId: 'G' });
   await s.bot.handle({ id: 'c1', type: 'callback.received', data: { from: 'u1', chatId: 'u1', data: 'counter:3', msgId: 'm9' } });
   assert.deepEqual(s.edits.at(-1), { msgId: 'm9', content: '🔢 Compteur : **3**' });
+});
+
+test('groupe : commande adressée à un autre bot ignorée (BOT_USERNAME)', async () => {
+  const sent: string[] = [];
+  const client = { send: async (_t: unknown, text: string) => { sent.push(text); return {}; }, editMessage: async () => ({}), sendChatAction: async () => ({}) };
+  const bot = createBot({ client, store: new Store(''), config: { adminIds: [], defaultLang: 'fr', botUsername: 'mon_bot' }, log: silent });
+  const g = (textMsg: string) => bot.handle({ id: textMsg, type: 'group_message.received', data: { from: 'u1', groupId: 'G', type: 'text', textMsg } });
+  await g('/ping@autre_bot');
+  assert.equal(sent.length, 0);
+  await g('/ping@Mon_Bot');
+  await g('/ping');
+  assert.equal(sent.length, 2);
 });
 
 test('polling : ordre garanti par conversation, parallélisme entre conversations, acquittement après succès', async () => {

@@ -28,10 +28,15 @@ export type Context = {
   button: typeof button;
 };
 
-/** « /echo@mon_bot bonjour » → { name: 'echo', args: 'bonjour' } ; sinon null. */
-export function parseCommand(text: string | undefined): { name: string; args: string } | null {
-  const m = /^\/([a-zA-Z0-9_]+)(?:@\w+)?(?:\s+([\s\S]*))?$/.exec(String(text || '').trim());
-  return m ? { name: m[1].toLowerCase(), args: (m[2] || '').trim() } : null;
+/**
+ * « /echo@mon_bot bonjour » → { name: 'echo', args: 'bonjour', bot: 'mon_bot' } ; sinon null.
+ * En groupe, « /commande@nom_du_bot » ne concerne QUE ce bot (convention Telegram) : la plateforme ne le remet
+ * qu'à lui, et le routeur l'ignore aussi si BOT_USERNAME est renseigné.
+ */
+export function parseCommand(text: string | undefined): { name: string; args: string; bot?: string } | null {
+  const m = /^\/([a-zA-Z0-9_]+)(?:@(\w+))?(?:\s+([\s\S]*))?$/.exec(String(text || '').trim());
+  if (!m) return null;
+  return { name: m[1].toLowerCase(), args: (m[3] || '').trim(), ...(m[2] ? { bot: m[2].toLowerCase() } : {}) };
 }
 
 /** Ce dont le routeur a besoin du client (permet de le remplacer par un faux client dans les tests). */
@@ -41,7 +46,7 @@ export type BotClient = {
   sendChatAction: (to: string, action?: string, seconds?: number) => Promise<unknown>;
 };
 
-export function createBot(o: { client: BotClient; store: Store; config: Pick<Config, 'adminIds' | 'defaultLang'>; log: Logger }) {
+export function createBot(o: { client: BotClient; store: Store; config: Pick<Config, 'adminIds' | 'defaultLang' | 'botUsername'>; log: Logger }) {
   const { client, store, config, log } = o;
   const langOf = (userId: string): Lang => (store.get(userId).lang as Lang) || config.defaultLang;
 
@@ -82,6 +87,7 @@ export function createBot(o: { client: BotClient; store: Store; config: Pick<Con
       if (d.type && d.type !== 'text' || !d.groupId) return;
       const cmd = parseCommand(d.textMsg);
       if (!cmd && !d.isMentioned) return; // le bot n'écoute pas les conversations de groupe
+      if (cmd?.bot && config.botUsername && cmd.bot !== config.botUsername) return; // commande pour un autre bot
       await runCommand(context({ groupId: d.groupId }, userId, cmd ? cmd.args : '', true), cmd ? cmd.name : 'help');
     } else if (u.type === 'callback.received') {
       const target: Target = d.groupId ? { groupId: d.groupId } : { to: d.chatId || userId };

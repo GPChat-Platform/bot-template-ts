@@ -10,6 +10,7 @@
  *   ADMIN_IDS              userId des administrateurs, séparés par des virgules
  *   DEFAULT_LANG           fr (défaut) | en
  *   LOG_LEVEL              debug | info (défaut) | warn | error
+ *   BOT_USERNAME           @nom du bot (facultatif) : en groupe, les commandes « /cmd@autre_bot » sont ignorées
  *   OPS_PORT / OPS_HOST    serveur d'exploitation /healthz /readyz /metrics (9100 / 127.0.0.1)
  *   GPCHAT_BASE_URL        autre environnement (rare)
  */
@@ -23,6 +24,7 @@ export type Config = {
   concurrency: number;
   dataDir: string;
   adminIds: string[];
+  botUsername?: string;
   defaultLang: Lang;
   logLevel: LogLevel;
   opsPort: number;
@@ -64,6 +66,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     concurrency: int('CONCURRENCY', env.CONCURRENCY, 16, 1, 256, errors),
     dataDir: env.DATA_DIR === undefined ? './data' : env.DATA_DIR,
     adminIds: list(env.ADMIN_IDS),
+    botUsername: (env.BOT_USERNAME || '').replace(/^@/, '').toLowerCase() || undefined,
     defaultLang: lang as Lang,
     logLevel: level as LogLevel,
     opsPort: int('OPS_PORT', env.OPS_PORT, 9100, 1, 65535, errors),
